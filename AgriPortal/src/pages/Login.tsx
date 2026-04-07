@@ -13,9 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [isSignup, setIsSignup] = useState(false);
   const [role, setRole] = useState("farmer");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -35,13 +33,8 @@ export default function Login() {
       return;
     }
 
-    const endpoint = isSignup
-      ? "http://localhost:5000/api/auth/signup"
-      : "http://localhost:5000/api/auth/login";
-
-    const bodyData = isSignup
-      ? { name, email, password }
-      : { email, password, role };
+    const endpoint = "http://localhost:5000/api/auth/login";
+    const bodyData = { email, password, role };
 
     try {
       const res = await fetch(endpoint, {
@@ -58,15 +51,14 @@ export default function Login() {
       console.log("Response data:", data);
 
       if (res.ok) {
-        if (isSignup) {
-          alert("Signup successful! Please login.");
-          setIsSignup(false);
-          setEmail("");
-          setPassword("");
-          setName("");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userRole", data.role);
+        
+        // Store admin email if admin login
+        if (data.role === "admin") {
+          localStorage.setItem("adminEmail", email);
+          navigate("/admin-dashboard");
         } else {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userRole", data.role);
           navigate("/profile");
         }
       } else {
@@ -97,11 +89,7 @@ export default function Login() {
 
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-6">
-          {isSignup
-            ? "Create Farmer Account"
-            : role === "admin"
-            ? "Admin Login"
-            : "Farmer Login"}
+          {role === "admin" ? "Admin Login" : "Farmer Login"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,33 +101,19 @@ export default function Login() {
             </div>
           )}
 
-          {/* Role Selector (Only in Login Mode) */}
-          {!isSignup && (
-            <Select
-              onValueChange={(value) => setRole(value)}
-              defaultValue="farmer"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="farmer">Farmer</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-
-          {/* Name field only in Signup */}
-          {isSignup && (
-            <Input
-              type="text"
-              placeholder="Full Name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-          )}
+          {/* Role Selector */}
+          <Select
+            onValueChange={(value) => setRole(value)}
+            defaultValue="farmer"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="farmer">Farmer</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
 
           <Input
             type="email"
@@ -166,8 +140,6 @@ export default function Login() {
           >
             {loading
               ? "Loading..."
-              : isSignup
-              ? "Sign Up"
               : role === "admin"
               ? "Sign In as Admin"
               : "Sign In"}
@@ -176,18 +148,24 @@ export default function Login() {
 
         {/* Toggle */}
         {role !== "admin" && (
-          <p className="text-sm text-center mt-6">
-            {isSignup
-              ? "Already have an account?"
-              : "Don’t have an account?"}
+          <div className="text-center mt-6 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              New farmer looking to register?
+            </p>
             <button
               type="button"
-              onClick={() => setIsSignup(!isSignup)}
-              className="ml-1 text-primary font-medium hover:underline"
+              onClick={() => navigate("/farmer-registration")}
+              className="w-full py-2 rounded-lg border border-primary text-primary font-semibold hover:bg-primary/5 transition"
             >
-              {isSignup ? "Sign In" : "Sign Up"}
+              Create Farmer Account
             </button>
-          </p>
+            <p className="text-xs text-muted-foreground">
+              Already registered?{" "}
+              <span className="text-primary font-semibold">
+                Already logged in will redirect you
+              </span>
+            </p>
+          </div>
         )}
       </motion.div>
     </div>

@@ -22,14 +22,53 @@ export default function GrievanceSystem() {
 
   const token = localStorage.getItem("token");
 
-  // Handle image selection
+  // Handle image selection with compression
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large ❌",
+          description: "Image size must be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Invalid File Type ❌",
+          description: "Please select a valid image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const result = reader.result as string;
+        // Validate that the image data was read correctly
+        if (result && result.length > 0) {
+          setImagePreview(result);
+          console.log("Image loaded successfully, size:", result.length);
+        } else {
+          toast({
+            title: "Error Loading Image ❌",
+            description: "Failed to read image file",
+            variant: "destructive",
+          });
+        }
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Error Loading Image ❌",
+          description: "Failed to read image file",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -50,7 +89,17 @@ export default function GrievanceSystem() {
     if (!mobile || !category || !description) {
       toast({
         title: "Validation Error ❌",
-        description: "Please fill all fields",
+        description: "Please fill all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Image validation - optional but if selected must load properly
+    if (image && !imagePreview) {
+      toast({
+        title: "Image Error ❌",
+        description: "Image failed to load. Please try again.",
         variant: "destructive",
       });
       return;
@@ -64,54 +113,69 @@ export default function GrievanceSystem() {
       formData.append("image", imagePreview);
     }
 
-    const res = await fetch(
-      "http://localhost:5000/api/griviences",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: category,
-          description,
-          mobile,
-          image: imagePreview || null,
-        }),
+    try {
+      const payload = {
+        title: category,
+        description,
+        mobile,
+        image: imagePreview || null,
+      };
+
+      console.log("Submitting grievance with image size:", imagePreview ? imagePreview.length : "no image");
+
+      const res = await fetch(
+        "http://localhost:5000/api/griviences",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const grievanceId = data._id ? data._id.slice(0, 8).toUpperCase() : "GRV";
+        
+        console.log("Grievance submitted successfully:", grievanceId);
+        
+        toast({
+          title: "Grievance Submitted ✅",
+          description: `Your ID: ${grievanceId}. Check your profile for updates.`,
+        });
+
+        // Reset form
+        setTitle("");
+        setMobile("");
+        setCategory("");
+        setDescription("");
+        setImage(null);
+        setImagePreview("");
+        setTrackId("");
+        setTrackedGrievance(null);
+
+        // Wait 1.5 seconds then navigate to profile
+        setTimeout(() => {
+          navigate("/profile");
+        }, 1500);
+      } else {
+        console.error("Submission error:", data);
+        toast({
+          title: "Error ❌",
+          description: data.message || "Failed to submit grievance",
+          variant: "destructive",
+        });
       }
-    );
-
-    const data = await res.json();
-
-    if (res.ok) {
-      const grievanceId = data._id ? data._id.slice(0, 8).toUpperCase() : "GRV";
-      
+    } catch (error) {
+      console.error("Network error:", error);
       toast({
-        title: "Grievance Submitted ✅",
-        description: `Your ID: ${grievanceId}. Check your profile for updates.`,
-      });
-
-      // Reset form
-      setTitle("");
-      setMobile("");
-      setCategory("");
-      setDescription("");
-      setImage(null);
-      setImagePreview("");
-      setTrackId("");
-      setTrackedGrievance(null);
-
-      // Wait 1.5 seconds then navigate to profile
-      setTimeout(() => {
-        navigate("/profile");
-      }, 1500);
-    } else {
-      toast({
-        title: "Error ❌",
-        description: data.message || "Failed to submit grievance",
+        title: "Network Error ❌",
+        description: "Failed to submit. Check your connection.",
         variant: "destructive",
       });
-      console.error("Submission error:", data);
     }
   };
 

@@ -16,6 +16,7 @@ const navLinks = [
   { label: "Features", href: "#features" },
   { label: "Impact", href: "#impact" },
   { label: "Testimonials", href: "#testimonials" },
+  { label: "Schemes", href: "/government-schemes", isRoute: true },
 ];
 
 export function Navbar({ user, onProfileClick }: NavbarProps) {
@@ -38,15 +39,25 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {l.label}
-            </a>
-          ))}
+          {navLinks.map((l) => 
+            l.isRoute ? (
+              <Link
+                key={l.href}
+                to={l.href}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                key={l.href}
+                href={l.href}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {l.label}
+              </a>
+            )
+          )}
         </div>
 
         {/* Desktop Right Section */}
@@ -78,9 +89,9 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
             </div>
           ) : (
             <>
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  Log in
+              <Link to="/farmer-registration">
+                <Button variant="outline" size="sm">
+                  Register
                 </Button>
               </Link>
 
@@ -89,7 +100,7 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
                   size="sm"
                   className="gradient-primary border-0 text-primary-foreground"
                 >
-                  Get Started
+                  Login
                 </Button>
               </Link>
             </>
@@ -130,18 +141,29 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
             className="md:hidden overflow-hidden bg-background border-b border-border"
           >
             <div className="p-4 flex flex-col gap-3">
-              {navLinks.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  className="text-sm font-medium text-muted-foreground py-2"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {l.label}
-                </a>
-              ))}
+              {navLinks.map((l) =>
+                l.isRoute ? (
+                  <Link
+                    key={l.href}
+                    to={l.href}
+                    className="text-sm font-medium text-muted-foreground py-2"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {l.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    className="text-sm font-medium text-muted-foreground py-2"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {l.label}
+                  </a>
+                )
+              )}
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex flex-col gap-2 pt-2 space-y-2">
                 {user ? (
                   <Button
                     className="w-full"
@@ -155,22 +177,22 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
                   </Button>
                 ) : (
                   <>
-                    <Link to="/login" className="flex-1">
+                    <Link to="/farmer-registration" className="w-full">
                       <Button
                         variant="outline"
                         className="w-full"
                         size="sm"
                       >
-                        Log in
+                        Register as Farmer
                       </Button>
                     </Link>
 
-                    <Link to="/login" className="flex-1">
+                    <Link to="/login" className="w-full">
                       <Button
                         className="w-full gradient-primary border-0 text-primary-foreground"
                         size="sm"
                       >
-                        Get Started
+                        Login
                       </Button>
                     </Link>
                   </>

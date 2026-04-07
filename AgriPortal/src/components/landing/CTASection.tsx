@@ -25,11 +25,13 @@ export function CTASection() {
             <p className="text-primary-foreground/80 text-lg max-w-xl mx-auto mb-8">
               Join thousands of farmers using AI-powered insights to grow smarter, earn more, and build a sustainable future.
             </p>
-            <Link to="/login">
-              <Button size="lg" variant="secondary" className="text-base px-8 h-12 rounded-xl font-semibold">
-                Get Started Free <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/farmer-registration">
+                <Button size="lg" variant="secondary" className="text-base px-8 h-12 rounded-xl font-semibold">
+                  Register as Farmer <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>
