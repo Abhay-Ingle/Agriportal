@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import AIcropAdvisor from "./pages/AIcropAdvisor";
 import PriceIntelligence from "./pages/PriceIntelligence";
 import GrivienceSystem from "./pages/GrivienceSystem";
-import AgriMarketplace from "./pages/AgriMarketplace";
+import AgriMarketPlace from "./pages/AgriMarketPlace";
 import WeatherIntel from "./pages/WeatherIntel";
 import SmartDashboard from "./pages/SmartDashboard";
 import CommunityForum from "./pages/CommunityForum";
@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/ai-crop-advisor" element={<AIcropAdvisor />} />
             <Route path="/price-intelligence" element={<PriceIntelligence />} />
             <Route path="/grievance-system" element={<GrivienceSystem />} />
-            <Route path="/agri-marketplace" element={<AgriMarketplace />} />
+            <Route path="/agri-marketplace" element={<AgriMarketPlace />} />
             <Route path="/weather-Intel" element={<WeatherIntel />} />
             <Route path="/smart-dashboard" element={<SmartDashboard />} />
             <Route path="/community-forum" element={<CommunityForum />} />
