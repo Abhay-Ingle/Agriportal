@@ -12,11 +12,15 @@ dotenv.config();
 
 const app = express();
 
-// CORS Configuration - Allow frontend from Vercel
+// CORS Configuration - Allow frontend from Vercel and localhost
 const corsOptions = {
   origin: [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://localhost:8080",
+    "http://localhost:8081",
+    "http://localhost:8082",
+    "http://localhost:8083",
     "https://agriportal3.vercel.app",
     "https://agriportal-1-hkp4.onrender.com"
   ],

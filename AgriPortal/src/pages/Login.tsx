@@ -15,18 +15,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [otpStep, setOtpStep] = useState(false); // false = form, true = OTP verification
   const [role, setRole] = useState("farmer");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
-  const [otpTimer, setOtpTimer] = useState(0);
 
   const navigate = useNavigate();
 
@@ -82,14 +78,14 @@ export default function Login() {
     }
   };
 
-  const handleSendOtp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setLoading(true);
 
     // Validation
-    if (!name || !email || !password || !confirmPassword || !phone) {
+    if (!name || !email || !password || !confirmPassword) {
       setError("All fields are required");
       setLoading(false);
       return;
@@ -107,73 +103,11 @@ export default function Login() {
       return;
     }
 
-    if (!/^[0-9]{10}$/.test(phone)) {
-      setError("Phone number must be 10 digits");
-      setLoading(false);
-      return;
-    }
-
-    const endpoint = `${API}/api/auth/send-otp`;
-    const bodyData = { phone, email };
-
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
-
-      const data = await res.json();
-      
-      if (res.ok) {
-        setSuccess("OTP sent to your phone. Valid for 2 minutes.");
-        setOtpStep(true);
-        setOtpTimer(120); // 2 minutes
-        
-        // Start countdown timer
-        const interval = setInterval(() => {
-          setOtpTimer((prev) => {
-            if (prev <= 1) {
-              clearInterval(interval);
-              setOtpStep(false);
-              setError("OTP expired. Please try again.");
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-      } else {
-        setError(data.message || "Failed to send OTP. Please try again.");
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Network error. Please check if the server is running.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    if (!otp) {
-      setError("OTP is required");
-      setLoading(false);
-      return;
-    }
-
-    const endpoint = `${API}/api/auth/verify-otp-and-signup`;
+    const endpoint = `${API}/api/auth/signup`;
     const bodyData = { 
       name, 
       email, 
       password, 
-      phone,
-      otp,
       role: "farmer" 
     };
 
@@ -189,19 +123,16 @@ export default function Login() {
       const data = await res.json();
       
       if (res.ok) {
-        setSuccess("Account created successfully! Redirecting to login...");
+        setSuccess("Account created successfully! Please login with your credentials.");
         setTimeout(() => {
           setIsSignUp(false);
-          setOtpStep(false);
           setName("");
           setEmail("");
           setPassword("");
           setConfirmPassword("");
-          setPhone("");
-          setOtp("");
         }, 2000);
       } else {
-        setError(data.message || "Invalid OTP. Please try again.");
+        setError(data.message || "Sign up failed. Please try again.");
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -228,11 +159,7 @@ export default function Login() {
 
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-6">
-          {isSignUp 
-            ? otpStep 
-              ? "Verify OTP" 
-              : "Create Farmer Account"
-            : "Farmer Login"}
+          {isSignUp ? "Create Farmer Account" : "Farmer Login"}
         </h2>
 
         {/* Success Message */}
@@ -249,47 +176,10 @@ export default function Login() {
           </div>
         )}
 
-        {isSignUp && otpStep ? (
-          // OTP Verification Form
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700 mb-4">
-              We've sent an OTP to {phone}. It's valid for {Math.floor(otpTimer / 60)}:{(otpTimer % 60).toString().padStart(2, '0')}
-            </div>
-
-            <Input
-              type="text"
-              placeholder="Enter 6-digit OTP"
-              maxLength={6}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-              disabled={loading}
-              className="text-center text-2xl tracking-widest"
-            />
-
-            <Button
-              type="submit"
-              disabled={loading || otp.length !== 6}
-              className="w-full gradient-primary border-0 text-primary-foreground"
-            >
-              {loading ? "Verifying..." : "Verify OTP"}
-            </Button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setOtpStep(false);
-                setOtp("");
-                setError("");
-              }}
-              className="w-full text-sm text-primary font-semibold hover:underline"
-            >
-              Back to Form
-            </button>
-          </form>
-        ) : isSignUp ? (
+        {isSignUp ? (
           // Sign Up Form
           <>
-            <form onSubmit={handleSendOtp} className="space-y-4">
+            <form onSubmit={handleSignUp} className="space-y-4">
               <Input
                 type="text"
                 placeholder="Full Name"
@@ -305,16 +195,6 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
-
-              <Input
-                type="tel"
-                placeholder="Phone Number (10 digits)"
-                required
-                maxLength={10}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                 disabled={loading}
               />
 
@@ -341,7 +221,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full gradient-primary border-0 text-primary-foreground"
               >
-                {loading ? "Sending OTP..." : "Send OTP"}
+                {loading ? "Creating Account..." : "Sign Up"}
               </Button>
             </form>
 
