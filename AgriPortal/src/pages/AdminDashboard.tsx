@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, Shield, Clock, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import API from "@/config/api";
 import {
   Table,
   TableBody,
@@ -57,7 +58,7 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/griviences/admin/all");
+      const res = await fetch(`${API}/api/griviences/admin/all`);
       const data = await res.json();
 
       setGrievances(data);

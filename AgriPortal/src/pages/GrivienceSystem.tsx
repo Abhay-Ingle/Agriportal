@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, Upload, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import API from "@/config/api";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -124,7 +125,7 @@ export default function GrievanceSystem() {
       console.log("Submitting grievance with image size:", imagePreview ? imagePreview.length : "no image");
 
       const res = await fetch(
-        "http://localhost:5000/api/griviences",
+        `${API}/api/griviences`,
         {
           method: "POST",
           headers: {
@@ -194,7 +195,7 @@ export default function GrievanceSystem() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/griviences/${trackId}`
+        `${API}/api/griviences/${trackId}`
       );
 
       const data = await res.json();

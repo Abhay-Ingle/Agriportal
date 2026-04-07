@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, ArrowLeft, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import API from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -59,7 +60,7 @@ export default function AdminGrievances() {
 
   const fetchAllGrievances = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/griviences/admin/all");
+      const res = await fetch(`${API}/api/griviences/admin/all`);
       if (!res.ok) {
         throw new Error("Failed to fetch grievances");
       }
@@ -78,7 +79,7 @@ export default function AdminGrievances() {
     setUpdating(true);
     try {
       const res = await fetch(
-        `http://localhost:5000/api/griviences/${selectedGrievance._id}/status`,
+        `${API}/api/griviences/${selectedGrievance._id}/status`,
         {
           method: "PUT",
           headers: {

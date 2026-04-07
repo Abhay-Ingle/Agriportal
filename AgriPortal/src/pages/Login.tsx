@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import API from "@/config/api";
 import {
   Select,
   SelectContent,
@@ -33,7 +34,7 @@ export default function Login() {
       return;
     }
 
-    const endpoint = "http://localhost:5000/api/auth/login";
+    const endpoint = `${API}/api/auth/login`;
     const bodyData = { email, password, role };
 
     try {

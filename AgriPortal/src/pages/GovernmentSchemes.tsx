@@ -3,6 +3,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import API from "@/config/api";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -51,7 +52,7 @@ export default function GovernmentSchemes() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("http://localhost:5000/api/schemes");
+        const response = await fetch(`${API}/api/schemes`);
         if (!response.ok) {
           throw new Error("Failed to fetch schemes");
         }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import API from "@/config/api";
 
 interface UserType {
   name: string;
@@ -46,7 +47,7 @@ export default function Profile() {
     }
 
     // Fetch user profile
-    fetch("http://localhost:5000/api/users/profile", {
+    fetch(`${API}/api/users/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -71,7 +72,7 @@ export default function Profile() {
       .catch(() => navigate("/login"));
 
     // Fetch user's griviences
-    fetch("http://localhost:5000/api/griviences/my", {
+    fetch(`${API}/api/griviences/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -95,7 +96,7 @@ export default function Profile() {
   const refreshGriviences = () => {
     if (!token) return;
     
-    fetch("http://localhost:5000/api/griviences/my", {
+    fetch(`${API}/api/griviences/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -161,7 +162,7 @@ export default function Profile() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/users/update",
+        `${API}/api/users/update`,
         {
           method: "PUT",
           headers: {
