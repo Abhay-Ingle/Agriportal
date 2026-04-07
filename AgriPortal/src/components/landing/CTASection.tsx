@@ -26,9 +26,9 @@ export function CTASection() {
               Join thousands of farmers using AI-powered insights to grow smarter, earn more, and build a sustainable future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/farmer-registration">
+              <Link to="/login">
                 <Button size="lg" variant="secondary" className="text-base px-8 h-12 rounded-xl font-semibold">
-                  Register as Farmer <ArrowRight className="w-4 h-4 ml-1" />
+                  Sign Up as Farmer <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </div>

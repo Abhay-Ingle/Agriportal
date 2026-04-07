@@ -89,12 +89,6 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
             </div>
           ) : (
             <>
-              <Link to="/farmer-registration">
-                <Button variant="outline" size="sm">
-                  Register
-                </Button>
-              </Link>
-
               <Link to="/login">
                 <Button
                   size="sm"
@@ -177,16 +171,6 @@ export function Navbar({ user, onProfileClick }: NavbarProps) {
                   </Button>
                 ) : (
                   <>
-                    <Link to="/farmer-registration" className="w-full">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        size="sm"
-                      >
-                        Register as Farmer
-                      </Button>
-                    </Link>
-
                     <Link to="/login" className="w-full">
                       <Button
                         className="w-full gradient-primary border-0 text-primary-foreground"

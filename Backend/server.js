@@ -12,7 +12,20 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// CORS Configuration - Allow frontend from Vercel
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://agriportal3.vercel.app",
+    "https://agriportal-1-hkp4.onrender.com"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
